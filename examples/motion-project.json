@@ -1,0 +1,271 @@
+{
+  "title": "Motion that explains",
+  "voice": "en-US-JennyNeural",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "slide_size": [
+    1280,
+    720
+  ],
+  "fps": 25,
+  "section_gap_seconds": 0,
+  "credits_hold_seconds": 0,
+  "transition_seconds": 0,
+  "motion_transition_seconds": 0.28,
+  "sections": [
+    {
+      "id": "demo",
+      "job_id": "YOUR_COMPLETED_INVOCAL_JOB_ID",
+      "wav": "audio/narration.wav",
+      "timeline": [
+        "audio/timeline.json"
+      ],
+      "job_metadata": "audio/job.json",
+      "script": "Charts should reveal an idea as it is explained. In this illustrative example, group A completed four tasks, group B completed seven, and group C completed ten. All bars share a zero baseline, so their heights can be compared fairly. Now follow the line: the value rises from two to five, dips to three, then reaches eight. The moving marker follows the actual data points. Motion directs attention; labels and scales preserve meaning."
+    }
+  ],
+  "sources": [
+    "Illustrative synthetic data created for renderer validation. No empirical claims."
+  ],
+  "scenes": [
+    {
+      "id": "intro",
+      "section": "demo",
+      "anchor": "START",
+      "title": "Motion that explains",
+      "elements": [
+        {
+          "id": "t",
+          "type": "text",
+          "text": "Motion that explains",
+          "position": [
+            80,
+            190,
+            1120,
+            102.4
+          ],
+          "font_size": 64,
+          "motion": {
+            "kind": "slide",
+            "duration": 0.6,
+            "offset": [
+              0,
+              22
+            ]
+          }
+        },
+        {
+          "id": "s",
+          "type": "text",
+          "text": "The visual follows the spoken idea",
+          "position": [
+            83,
+            320,
+            1100,
+            51.2
+          ],
+          "font_size": 32,
+          "motion": {
+            "kind": "slide",
+            "duration": 0.6,
+            "offset": [
+              0,
+              22
+            ]
+          },
+          "anchor": "reveal an idea"
+        }
+      ]
+    },
+    {
+      "id": "bars",
+      "section": "demo",
+      "anchor": "In this illustrative example",
+      "title": "A fair comparison",
+      "elements": [
+        {
+          "id": "t",
+          "type": "text",
+          "text": "A fair comparison",
+          "position": [
+            80,
+            65,
+            1120,
+            76.80000000000001
+          ],
+          "font_size": 48,
+          "motion": {
+            "kind": "slide",
+            "duration": 0.6,
+            "offset": [
+              0,
+              22
+            ]
+          }
+        }
+      ],
+      "charts": [
+        {
+          "kind": "bar",
+          "position": [
+            140,
+            210,
+            990,
+            350
+          ],
+          "unit": "Completed tasks",
+          "domain": [
+            0,
+            10
+          ],
+          "ticks": [
+            0,
+            2,
+            4,
+            6,
+            8,
+            10
+          ],
+          "labels": [
+            "Group A",
+            "Group B",
+            "Group C"
+          ],
+          "values": [
+            4,
+            7,
+            10
+          ],
+          "anchors": [
+            "four tasks",
+            "seven",
+            "ten"
+          ],
+          "duration": 0.65,
+          "source": "Illustrative data: A = 4, B = 7, C = 10",
+          "focus": {
+            "anchor": "zero baseline",
+            "until_anchor": "Now follow",
+            "value": 0,
+            "label": "Shared zero baseline"
+          }
+        }
+      ]
+    },
+    {
+      "id": "line",
+      "section": "demo",
+      "anchor": "Now follow",
+      "title": "Following a changing value",
+      "elements": [
+        {
+          "id": "t",
+          "type": "text",
+          "text": "Following a changing value",
+          "position": [
+            80,
+            65,
+            1120,
+            73.60000000000001
+          ],
+          "font_size": 46,
+          "motion": {
+            "kind": "slide",
+            "duration": 0.6,
+            "offset": [
+              0,
+              22
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "text": "Motion directs attention",
+          "position": [
+            80,
+            600,
+            1120,
+            51.2
+          ],
+          "font_size": 32,
+          "motion": {
+            "kind": "slide",
+            "duration": 0.6,
+            "offset": [
+              0,
+              22
+            ]
+          },
+          "anchor": "Motion directs"
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "text": "Labels and scales preserve meaning",
+          "position": [
+            80,
+            650,
+            1120,
+            40.0
+          ],
+          "font_size": 25,
+          "motion": {
+            "kind": "slide",
+            "duration": 0.6,
+            "offset": [
+              0,
+              22
+            ]
+          },
+          "anchor": "labels and scales"
+        }
+      ],
+      "charts": [
+        {
+          "kind": "line",
+          "position": [
+            140,
+            200,
+            990,
+            340
+          ],
+          "unit": "Value",
+          "domain": [
+            0,
+            10
+          ],
+          "ticks": [
+            0,
+            2,
+            4,
+            6,
+            8,
+            10
+          ],
+          "labels": [
+            "Step 1",
+            "Step 2",
+            "Step 3",
+            "Step 4"
+          ],
+          "values": [
+            2,
+            5,
+            3,
+            8
+          ],
+          "anchors": [
+            "two",
+            "five",
+            "three",
+            "eight"
+          ],
+          "source": "Illustrative data: 2, 5, 3, 8. Connecting lines guide the eye."
+        }
+      ]
+    }
+  ]
+}

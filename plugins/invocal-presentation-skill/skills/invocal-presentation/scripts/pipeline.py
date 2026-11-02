@@ -195,7 +195,18 @@ def prepare(project_path, build_dir):
                 require(element.get('attribution'), 'Image attribution/license record required')
                 item['src'] = str(p)
             elements.append(item)
-        scenes.append(dict(scene, start=scene_start, elements=elements))
+        charts = []
+        for chart in scene.get('charts', []):
+            from render_motion import validate_chart
+            item = dict(chart)
+            item['reveals'] = [sec['start'] + anchor_time(sec['words'], a) for a in chart['anchors']]
+            if 'focus' in item:
+                item['focus'] = dict(item['focus'])
+                item['focus']['start'] = sec['start'] + anchor_time(sec['words'], item['focus']['anchor'])
+                item['focus']['end'] = sec['start'] + anchor_time(sec['words'], item['focus']['until_anchor'])
+            validate_chart(item)
+            charts.append(item)
+        scenes.append(dict(scene, start=scene_start, elements=elements, charts=charts))
     require(scenes and abs(scenes[0]['start']) < 1e-6, 'First scene must begin at time zero')
     require(hold == 0 or any(s.get('section') is None for s in scenes), 'Credits hold needs an explicit reference scene')
     for i, scene in enumerate(scenes):
@@ -229,6 +240,16 @@ def prepare(project_path, build_dir):
                     narration_duration=sum(s['duration'] for s in sections), codec_tail_padding_seconds=tail_guard, project_path=str(project_path))
     write(build / 'manifest.json', manifest)
     return {'manifest':str(build / 'manifest.json'), 'duration':duration, 'sections':len(sections), 'scenes':len(scenes)}
+
+
+def save_png_atomic(image, path):
+    import os
+    buffer=io.BytesIO();image.save(buffer,format='PNG')
+    payload=buffer.getvalue();temporary=Path(str(path)+'.tmp')
+    with temporary.open('wb') as f:
+        f.write(payload);f.flush();os.fsync(f.fileno())
+    os.replace(temporary,path)
+    require(Path(path).stat().st_size==len(payload), 'Incomplete PNG write')
 
 
 def encode(manifest_path, states_path, output):
@@ -265,12 +286,13 @@ def encode(manifest_path, states_path, output):
             require(list(source.size) == m['resolution'], 'Wrong render dimensions')
             current = source.convert('RGB')
         final = frames_dir / f'state-{index:04}.png'
-        current.save(final)
+        save_png_atomic(current, final)
+        require(final.stat().st_size > 0, 'Empty normalized frame: '+str(final))
         end = ordered[index+1][0] if index+1 < len(ordered) else total
-        n = min(round(float(m.get('transition_seconds', .24))*fps), end-frame) if previous is not None else 0
+        n = min(round(float(state.get('transition_seconds', m.get('transition_seconds', .24)))*fps), end-frame) if previous is not None else 0
         for j in range(n):
             blend = frames_dir / f'transition-{index:04}-{j:02}.png'
-            Image.blend(previous, current, (j+1)/n).save(blend)
+            save_png_atomic(Image.blend(previous, current, (j+1)/n), blend)
             entry(blend, 1)
         entry(final, end-frame-n)
         events.append(dict(state, encoded_frame=frame, encoded_time=frame/fps, onset_delay=frame/fps-state['time'], transition_seconds=n/fps))
@@ -294,7 +316,8 @@ def encode(manifest_path, states_path, output):
          '-c:a','copy',
          '-c:s','mov_text','-metadata:s:s:0','language='+m.get('caption_language','eng'),'-disposition:s:0','0','-movflags','+faststart','-t',str(total/fps),output])
     require(output.is_file() and output.stat().st_size > 0, 'Encoder produced no file bytes')
-    run(['ffprobe','-v','error','-show_entries','format=duration','-of','json',output])
+    probe=json.loads(run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=duration,nb_frames','-of','json',output]))
+    require(abs(float(probe['streams'][0]['duration'])-total/fps)<.06, 'Encoded video stream truncated')
     record = frames_dir / 'encoded-events.json'
     write(record, events)
     return {'video':str(output),'events':str(record),'duration':total/fps,'states':len(events)}
@@ -328,9 +351,28 @@ def verify(manifest_path, events_path, video, pptx=None):
         rms=float(np.sqrt(np.mean(got**2)))
         require(math.isfinite(corr) and corr>.97 and rms>.01, 'Narration/source mismatch: '+section['id'])
         audio_checks.append({'section':section['id'],'duration':duration,'correlation':corr,'rms_dbfs':20*math.log10(rms)})
+    require(abs(float(vs['duration'])-math.ceil(m['duration']*m['fps'])/m['fps']) < .06, 'Video stream ends before full timeline')
+    # Extract all required exact frame indices in one decode pass. This also avoids
+    # seek-to-next-frame errors and hundreds of decoder startups for continuous motion.
+    samples=[]
+    for scene in m['scenes']:
+        last=[e for e in events if e['scene']==scene['id']][-1]
+        samples.append(min(scene['end']-.04,last['encoded_time']+last['transition_seconds']+.08))
+    for i,event in enumerate(events):
+        end=events[i+1]['encoded_time'] if i+1<len(events) else m['duration']
+        t=event['encoded_time']+event['transition_seconds']+.25/m['fps']
+        if t<end:samples.append(t)
+    for section in m['sections']:
+        samples += [section['start']+min(1,section['duration']/4), section['start']+section['duration']/2,
+                    section['start']+max(0,section['duration']-.5)]
+    indices=sorted({math.floor(t*m['fps']+1e-6) for t in samples})
+    cache=qa/'exact-frames';cache.mkdir(exist_ok=True)
+    selector='+'.join(f'eq(n\\,{i})' for i in indices)
+    run(['ffmpeg','-y','-v','error','-i',video,'-vf','select='+selector,'-vsync','0',cache/'%06d.png'])
+    index_paths={index:cache/f'{i+1:06d}.png' for i,index in enumerate(indices)}
     def frame(t):
-        data=run(['ffmpeg','-v','error','-ss',f'{t:.6f}','-i',video,'-frames:v','1','-f','image2pipe','-c:v','png','-'])
-        return Image.open(io.BytesIO(data)).convert('RGB')
+        index=math.floor(t*m['fps']+1e-6)
+        return Image.open(index_paths[index]).convert('RGB')
     scene_checks=[]
     for scene in m['scenes']:
         selected=[e for e in events if e['scene']==scene['id']]
@@ -347,12 +389,12 @@ def verify(manifest_path, events_path, video, pptx=None):
     event_checks=[]
     for i,event in enumerate(events):
         end=events[i+1]['encoded_time'] if i+1<len(events) else m['duration']
-        t=event['encoded_time']+event['transition_seconds']+.04
+        t=event['encoded_time']+event['transition_seconds']+.25/m['fps']
         if t>=end:continue
         got=np.asarray(frame(t).resize((480,270)),dtype=float)
         ref=np.asarray(Image.open(event['path']).convert('RGB').resize((480,270)),dtype=float)
         mae=float(np.mean(abs(got-ref)))
-        require(mae<3, 'Encoded visual cue mismatch')
+        require(mae<3, f'Encoded visual cue mismatch at {t:.6f}s, MAE={mae:.4f}')
         event_checks.append({'scene':event['scene'],'time':event['encoded_time'],'mae':mae})
     checkpoints=[]
     for n,section in enumerate(m['sections']):

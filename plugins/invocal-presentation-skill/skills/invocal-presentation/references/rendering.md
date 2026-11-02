@@ -23,3 +23,5 @@ If no renderer is available, state that specific blocker. Continue research/scri
 With image `contain`, calculate `scale=min(frame_width/source_width, frame_height/source_height)` and center offsets for unused width/height. Convert anatomical/diagram target coordinates through this transform. Position outlines in slide coordinates; the PNG exporter scales the whole slide. Check at full size. Avoid leaving outlines on labels or empty space when the target is elsewhere.
 
 Timed removal in the baseline adapter is for outline annotations. Use `until_anchor` on the old outline. Do not rely on removing arbitrary image/text objects through this adapter without adding and testing that support.
+
+For optional continuous chart animation and its limitations, read [motion.md](motion.md).

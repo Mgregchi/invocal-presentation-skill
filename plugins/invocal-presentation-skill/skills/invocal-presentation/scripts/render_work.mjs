@@ -23,6 +23,23 @@ const geometries=[];
 for (const scene of manifest.scenes) {
   const slide=presentation.slides.add();
   slide.background.fill=scene.background||'#FAF9F6';
+  // Editable final-state charts for the deck. Video motion uses render_motion.py.
+  for (const c of scene.charts||[]) {
+    const [left,top,width,height]=c.position;
+    for (const [text,y,size] of [[c.unit||'Value',top-32,20],[c.source,top+height+20,17]]) {
+      const label=slide.shapes.add({geometry:'textbox',position:{left,top:y,width,height:30},fill:'none',line:{style:'solid',fill:'none',width:0}});
+      label.text=text;label.text.style={typeface:manifest.font||'DejaVu Sans',fontSize:size,color:'#5A706D'};
+    }
+    slide.charts.add(c.kind, {
+      position:{left,top,width,height}, categories:c.labels,
+      series:[{name:c.unit||'Value',values:c.values,fill:'#328D88',line:{style:'solid',fill:'#328D88',width:3}}],
+      hasLegend:false, barOptions:{direction:'column',grouping:'clustered'},
+      lineOptions:{smooth:false},
+      xAxis:{textStyle:{typeface:manifest.font||'DejaVu Sans',fontSize:22}},
+      yAxis:{min:c.domain[0],max:c.domain[1],majorUnit:c.ticks?.length>1?c.ticks[1]-c.ticks[0]:undefined,textStyle:{typeface:manifest.font||'DejaVu Sans',fontSize:20}},
+      dataLabels:{showValue:c.kind==='bar',textStyle:{typeface:manifest.font||'DejaVu Sans',fontSize:22}}
+    });
+  }
   const objects=new Map();
   const events=[{time:scene.start}];
   for(const element of scene.elements){
@@ -69,7 +86,7 @@ for (const scene of manifest.scenes) {
   }
   const sec=manifest.sections.find(s=>s.id===scene.section);
   const spoken=sec?sec.words.filter(w=>sec.start+w.start>=scene.start && sec.start+w.start<scene.end).map(w=>w.text).join(' '):'';
-  slide.speakerNotes.text=`${scene.title||scene.id}\nVideo ${scene.start.toFixed(3)}–${scene.end.toFixed(3)} s\n\nNARRATION\n${spoken}\n\n${scene.notes||''}\n\nSOURCES\n${[...(manifest.sources||[]),...(sec?.sources||[])].join('\n')}\n\nIMAGE ATTRIBUTION\n${scene.elements.filter(e=>e.type==='image').map(e=>e.attribution).join('\n')}`;
+  slide.speakerNotes.text=`${scene.title||scene.id}\nVideo ${scene.start.toFixed(3)}–${scene.end.toFixed(3)} s\n\nNARRATION\n${spoken}\n\n${scene.notes||''}\n${(scene.charts||[]).map(c=>c.source).join('\n')}\n\nSOURCES\n${[...(manifest.sources||[]),...(sec?.sources||[])].join('\n')}\n\nIMAGE ATTRIBUTION\n${scene.elements.filter(e=>e.type==='image').map(e=>e.attribution).join('\n')}`;
   const png=await presentation.export({slide,format:'png',scale});
   await fs.writeFile(path.join(out,`slide-${String(presentation.slides.items.length).padStart(2,'0')}.png`),new Uint8Array(await png.arrayBuffer()));
 }

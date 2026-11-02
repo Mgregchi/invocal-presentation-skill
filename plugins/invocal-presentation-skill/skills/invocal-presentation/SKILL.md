@@ -49,7 +49,15 @@ Anchor reveals to unique spoken phrases, explicit occurrences or word indices. D
 
 Use varied layouts, readable typography, generous usable margins and purposeful imagery. Avoid decorative panels, fake diagrams, tiny labels, text overlap and repetitive templates. Keep text and required charts/tables editable through the host's supported presentation route. Do not generate precise medical or data visuals with an image model when accuracy cannot be established.
 
-Render one editable slide per teaching scene, with narration notes, citations and image attribution. Render progressive cumulative PNG states from the same content. Introduce an image as the relevant concept is explained. Highlight the precise structure/process being discussed and remove outdated emphasis. Prefer purposeful reveals and short transitions over continuous decorative movement. Discrete reveals/dissolves are supported; richer chart animation, continuous motion and presenter avatars require separate validation. Do not promise them as tested features.
+Render one editable slide per teaching scene, with narration notes, citations and image attribution. Render progressive cumulative PNG states from the same content. Introduce an image as the relevant concept is explained. Highlight the precise structure/process being discussed and remove outdated emphasis. Prefer purposeful reveals and short transitions over continuous decorative movement. For continuous chart motion, read [motion.md](references/motion.md) and use its bounded renderer contract. The initial validation covers positive bar growth, progressive lines, moving endpoints, text entrances and scene dissolves. Keep unsupported chart types and presenter avatars outside claims of support.
+
+For compatible text/chart scenes, render continuous video states separately from the editable deck:
+
+```bash
+python /ABSOLUTE/SKILL/scripts/render_motion.py BUILD/manifest.json NEW_MOTION_RENDER_DIRECTORY
+```
+
+The motion adapter currently supports single-line text, outlines and one-series bar/line charts. Its state list carries zero extra dissolve per frame. Use the Work adapter for the editable final chart slides and the motion adapter for the video frames. Do not silently drop image elements or unsupported charts. Read the motion contract before choosing this route.
 
 Inspect every slide at full size and important intermediate states. Repair before encoding. Complete the host's presentation package/layout/font/finalization checks; the bundled adapter's candidate file is not final approval. Record the final deck filename.
 

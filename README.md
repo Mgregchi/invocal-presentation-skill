@@ -31,7 +31,7 @@ Start with a setup check before commissioning a full production.
 
 ## Verified scope
 
-Short photosynthesis and IP-address lessons were produced with Invocal narration, progressive reveals and encoded video verification. A longer breast-cancer lesson established the original workflow. The repository contains production helpers, not a hosted rendering service. Continuous chart animation, presenter avatars and lip-sync remain future validation work.
+Short photosynthesis and IP-address lessons were produced with Invocal narration, progressive reveals and encoded video verification. A longer breast-cancer lesson established the original workflow. The repository contains production helpers, not a hosted rendering service. The new optional motion renderer supports positive bar growth, progressive lines with moving endpoints, text entrances and scene dissolves. Presenter avatars, lip-sync, camera moves and additional chart types remain future work. See the skill’s `references/motion.md` for the contract and limitations.
 
 ## Structure
 

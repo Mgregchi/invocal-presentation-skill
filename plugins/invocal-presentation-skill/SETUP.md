@@ -7,7 +7,7 @@
 
 This package contains instructions and production helpers, not a separately hosted rendering API. Plugin installation alone cannot grant missing execution capabilities. There is no bundled MCP server configuration that restricts the package to desktop; Invocal is a separately connected dependency.
 
-The baseline has been tested with short photosynthesis and IP-address lessons using Invocal. Existing breast-cancer production established the longer lesson workflow. Discrete reveals, focus markers and short dissolves are supported. Do not claim chart animation, continuous motion, avatars, lip-sync or independent clinical sign-off without further validation.
+The baseline has been tested with short photosynthesis and IP-address lessons using Invocal. Existing breast-cancer production established the longer lesson workflow. Discrete reveals, focus markers and short dissolves are supported. Version 1.1 adds an optional continuous renderer for positive bars, progressive lines, moving endpoints and text entrances. See references/motion.md for host requirements and limitations. Avatars, lip-sync and independent clinical sign-off remain outside the validated scope.
 
 ## Distribution
 

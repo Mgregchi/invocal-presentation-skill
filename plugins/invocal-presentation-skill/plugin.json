@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "invocal-presentation-skill",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Narration-led video production with researched scripts, synchronized visuals, editable presentations, captions and verified exports. Uses Invocal; requires compatible media tools.",
   "keywords": [
     "education",
@@ -16,7 +16,7 @@
       "interface": {
         "displayName": "Invocal Presentation Skill",
         "shortDescription": "Create narrated lessons with timed visuals and verified exports",
-        "longDescription": "Turn a topic into a researched, narrated educational video. Includes reusable Python media-production and verification scripts, an optional compatible Work presentation adapter, narration-first teaching guidance, captions and editable slides. Uses the recipient\u2019s own authorized Invocal connection for speech and Azure word timestamps. Requires an execution environment with FFmpeg, FFprobe, Pillow and NumPy, plus editable slide authoring and rendering. Installing this package does not provide external accounts, private narration jobs, media executables or the Work-only slide runtime. Baseline support covers timed reveals, focus markers and short dissolves; richer chart animation and presenter avatars are not yet validated.",
+        "longDescription": "Turn a topic into a researched, narrated educational video. Includes reusable Python media-production and verification scripts, an optional compatible Work presentation adapter, narration-first teaching guidance, captions and editable slides. Uses the recipient\u2019s own authorized Invocal connection for speech and Azure word timestamps. Requires an execution environment with FFmpeg, FFprobe, Pillow and NumPy, plus editable slide authoring and rendering. Installing this package does not provide external accounts, private narration jobs, media executables or the Work-only slide runtime. Includes an optional frame-by-frame renderer for positive bar growth, progressive line charts, moving endpoints, text entrances and short dissolves. Presenter avatars, lip-sync and other chart types are not included.",
         "category": "Productivity",
         "capabilities": [
           "Read",
