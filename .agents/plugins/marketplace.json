@@ -1,0 +1,16 @@
+{
+  "name": "invocal-presentation-skill",
+  "interface": {
+    "displayName": "Invocal Presentation Skill"
+  },
+  "plugins": [
+    {
+      "name": "invocal-presentation-skill",
+      "source": {
+        "source": "local",
+        "path": "./plugins/invocal-presentation-skill"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

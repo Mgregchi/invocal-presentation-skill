@@ -1,0 +1,8 @@
+interface:
+  display_name: "Invocal Presentation Skill"
+  short_description: "Create narrated lessons with timed visuals and verified exports"
+  default_prompt: "Use $invocal-presentation to produce a researched educational video with Invocal narration, timed visuals, an editable presentation, captions and verified downloads."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+policy:
+  allow_implicit_invocation: true
